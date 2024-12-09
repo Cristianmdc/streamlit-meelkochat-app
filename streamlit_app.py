@@ -1,38 +1,20 @@
 import streamlit as st
 import openai
 
-# Set your OpenAI API key securely
-openai.api_key = st.secrets["openai_api_key"]
+# Define OpenAI API Key
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# Streamlit app
-st.title("Embedded Chat with GPT")
+st.title("Meelko Pellet Assistant")
+st.write("Ask me anything about Meelko Pellet Mills!")
 
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "system", "content": "How can I help you today?"}]
-
-# Display chat messages
-for message in st.session_state["messages"]:
-    if message["role"] == "user":
-        st.write(f"**You:** {message['content']}")
-    else:
-        st.write(f"**Bot:** {message['content']}")
-
-# User input
-user_input = st.text_input("Your message:", key="input")
+user_input = st.text_input("Your question:")
 if user_input:
-    # Append user input
-    st.session_state["messages"].append({"role": "user", "content": user_input})
-
-    # Call GPT API
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=st.session_state["messages"]
-    )
-    reply = response.choices[0].message["content"]
-
-    # Append bot response
-    st.session_state["messages"].append({"role": "assistant", "content": reply})
-
-    # Clear input box
-    st.experimental_rerun()
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "system", "content": "You are Meelko Pellet Assistant."},
+                      {"role": "user", "content": user_input}]
+        )
+        st.write(response["choices"][0]["message"]["content"])
+    except Exception as e:
+        st.error(f"Error: {e}")
