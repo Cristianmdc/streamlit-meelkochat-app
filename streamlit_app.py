@@ -1,20 +1,23 @@
-import streamlit as st
 import openai
+import streamlit as st
 
-# Define OpenAI API Key
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Set your OpenAI API key
+openai.api_key = "your_openai_api_key"
 
-st.title("Meelko Pellet Assistant")
-st.write("Ask me anything about Meelko Pellet Mills!")
+# Function to interact with GPT
+def chat_with_gpt(prompt):
+    response = openai.Completion.create(
+        engine="text-davinci-003",  # Choose the GPT model
+        prompt=prompt,
+        max_tokens=150
+    )
+    return response.choices[0].text.strip()
 
-user_input = st.text_input("Your question:")
+# Streamlit app interface
+st.title("GPT-Powered App")
+st.text("Ask GPT a question!")
+
+user_input = st.text_input("Your Input:")
 if user_input:
-    try:
-        response = openai.ChatCompletion.create(
-            model="gpt-4",
-            messages=[{"role": "system", "content": "You are Meelko Pellet Assistant."},
-                      {"role": "user", "content": user_input}]
-        )
-        st.write(response["choices"][0]["message"]["content"])
-    except Exception as e:
-        st.error(f"Error: {e}")
+    output = chat_with_gpt(user_input)
+    st.write(output)
